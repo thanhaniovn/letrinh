@@ -1,10 +1,213 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Đang chuyển hướng...</title>
-  <meta http-equiv="refresh" content="0; url=https://drive.google.com/file/d/1ObDJpfuph_NsEOkiSChyMtxKIajkxD2n/view?usp=drive_link">
-</head>
-<body>
-  <p>Nếu bạn không được chuyển hướng tự động, vui lòng <a href="https://drive.google.com/file/d/1ObDJpfuph_NsEOkiSChyMtxKIajkxD2n/view?usp=drive_link">nhấn vào đây</a>.</p>
-</body>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CMC Telecom Icon Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">CMC</span>
+          <div>
+            <h1>Telecom Icon Manager</h1>
+            <p>Quản lý thư viện icon đa dự án · phiên bản demo</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="ghost" id="reset-demo">Đặt lại dữ liệu demo</button>
+          <button class="primary" id="create-pack">Tạo pack từ lựa chọn</button>
+        </div>
+      </header>
+
+      <div class="app-layout">
+        <aside class="sidebar" aria-label="Bộ lọc và tải lên">
+          <section class="panel upload-panel">
+            <h2>Tải lên icon SVG</h2>
+            <p>Kéo & thả hoặc chọn file để bổ sung vào thư viện.</p>
+            <label class="dropzone" id="dropzone">
+              <input type="file" accept="image/svg+xml" multiple id="upload-input" />
+              <span>Chọn hoặc thả file tại đây</span>
+              <small>Hỗ trợ lint & chuẩn hóa SVG tự động</small>
+            </label>
+          </section>
+
+          <section class="panel filters-panel">
+            <h2>Bộ lọc thư viện</h2>
+            <div class="field">
+              <label for="search">Tìm kiếm</label>
+              <input type="search" id="search" placeholder="Tên, từ khóa hoặc tag" />
+            </div>
+            <div class="field">
+              <label for="style-filter">Style</label>
+              <select id="style-filter"></select>
+            </div>
+            <div class="field">
+              <label for="category-filter">Category</label>
+              <select id="category-filter"></select>
+            </div>
+            <div class="field">
+              <label for="tag-filter">Tag</label>
+              <select id="tag-filter"></select>
+            </div>
+          </section>
+
+          <section class="panel library-stats">
+            <h2>Tổng quan</h2>
+            <div class="stat">
+              <span>Số icon</span>
+              <strong id="icon-count">0</strong>
+            </div>
+            <div class="stat">
+              <span>Category</span>
+              <strong id="category-count">0</strong>
+            </div>
+            <div class="stat">
+              <span>Style</span>
+              <strong id="style-count">0</strong>
+            </div>
+          </section>
+
+          <section class="panel taxonomy-panel">
+            <h2>Quản lý tag & category</h2>
+            <div class="taxonomy-group">
+              <header>
+                <span>Tags</span>
+                <button class="ghost small" data-action="add-tag">+ Thêm</button>
+              </header>
+              <ul id="tag-list"></ul>
+            </div>
+            <div class="taxonomy-group">
+              <header>
+                <span>Category</span>
+                <button class="ghost small" data-action="add-category">+ Thêm</button>
+              </header>
+              <ul id="category-list"></ul>
+            </div>
+          </section>
+        </aside>
+
+        <main class="content" aria-label="Lưới icon">
+          <div class="content-header">
+            <div>
+              <h2>Thư viện icon</h2>
+              <p class="subtitle">Chọn icon để xem chi tiết, chỉnh sửa hoặc xuất bản.</p>
+            </div>
+            <div class="bulk-actions">
+              <label class="select-all">
+                <input type="checkbox" id="select-all" /> Chọn tất cả
+              </label>
+              <button class="ghost" id="download-selected">Tải SVG đã chọn</button>
+            </div>
+          </div>
+          <div class="icon-grid" id="icon-grid" role="list"></div>
+          <div class="empty-state" id="empty-state" hidden>
+            <h3>Không tìm thấy icon</h3>
+            <p>Hãy thử đổi bộ lọc hoặc tải thêm SVG mới.</p>
+          </div>
+        </main>
+
+        <aside class="details" aria-label="Chi tiết icon">
+          <section class="panel preview-panel">
+            <h2>Xem & chỉnh sửa</h2>
+            <div class="preview" id="preview"></div>
+            <form class="preview-controls">
+              <div class="field">
+                <label for="size-control">Kích thước (px)</label>
+                <input type="range" id="size-control" min="16" max="256" value="128" />
+                <output id="size-output">128px</output>
+              </div>
+              <div class="field">
+                <label for="stroke-control">Stroke</label>
+                <select id="stroke-control">
+                  <option value="1">1</option>
+                  <option value="1.5">1.5</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="color-control">Màu sắc</label>
+                <input type="color" id="color-control" value="#2f6fed" />
+              </div>
+            </form>
+            <div class="preview-actions">
+              <button class="ghost" id="copy-svg">Copy SVG</button>
+              <button class="ghost" id="export-png">Export PNG</button>
+              <button class="ghost" id="save-preset">Lưu preset</button>
+            </div>
+            <div class="preset-list">
+              <h3>Preset style</h3>
+              <ul id="preset-list"></ul>
+            </div>
+          </section>
+
+          <section class="panel meta-panel">
+            <h2>Thông tin icon</h2>
+            <div class="meta" id="icon-meta"></div>
+            <div class="similar">
+              <h3>Gợi ý tương tự</h3>
+              <div id="similar-icons" class="similar-list"></div>
+            </div>
+          </section>
+
+          <section class="panel admin-panel">
+            <h2>Quản trị</h2>
+            <div class="roles">
+              <h3>Phân quyền</h3>
+              <ul id="role-list"></ul>
+            </div>
+            <div class="projects">
+              <h3>Thư viện dự án/brand</h3>
+              <ul id="project-list"></ul>
+              <button class="ghost small" id="add-project">+ Dự án mới</button>
+            </div>
+            <div class="lint">
+              <h3>Thiết lập lint SVG</h3>
+              <label><input type="checkbox" id="lint-stroke" checked /> Chuẩn hóa stroke width</label>
+              <label><input type="checkbox" id="lint-viewbox" checked /> Bắt buộc viewBox vuông</label>
+              <label><input type="checkbox" id="lint-fill" checked /> Tự động thay fill none</label>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <div class="modal" id="pack-modal" aria-hidden="true" role="dialog">
+      <div class="modal-content" role="document">
+        <header>
+          <h2>Tạo icon pack</h2>
+          <button class="icon" id="close-pack">✕</button>
+        </header>
+        <form id="pack-form">
+          <div class="field">
+            <label for="pack-name">Tên pack</label>
+            <input type="text" id="pack-name" name="pack-name" required placeholder="VD: App Mobile" />
+          </div>
+          <div class="field">
+            <label for="pack-version">Version</label>
+            <input type="text" id="pack-version" name="pack-version" required value="1.0.0" />
+          </div>
+          <div class="field">
+            <label for="pack-project">Dự án / Brand</label>
+            <input type="text" id="pack-project" name="pack-project" placeholder="CMC Telehealth" />
+          </div>
+          <button class="primary" type="submit">Tạo & tải về</button>
+        </form>
+      </div>
+    </div>
+
+    <canvas id="export-canvas" width="256" height="256" hidden></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-2Bz2nZ6kTpsuRWpuBHX6lzNN2O0o39YqZ0zcKXqQyV2pAonyz1ME3iAFH4x63HzlOAAb2YtL6ZooxOMmS0G/dA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="app.js" type="module"></script>
+  </body>
 </html>
